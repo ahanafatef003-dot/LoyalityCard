@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Card</title>
+    <!-- QR code library (cdnjs) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        /* ============ CSS VARIABLES ============ */
+        :root {
+            --bg-page: #f7f7f7;
+            --bg-app: #ffffff;
+            --bg-hero-1: #000000;
+            --bg-hero-2: #1a1a1a;
+            --text-primary: #111111;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --card-gray: #f1f1f1;
+            --card-gray-hover: #e9e9e9;
+            --border-light: #e5e7eb;
+            --green: #22c55e;
+            --radius-hero: 36px;
+            --radius-card: 24px;
+            --radius-btn: 999px;
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-nav: 0 8px 30px rgba(0, 0, 0, 0.25);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ============ RESET & BASE ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============ IPHONE FRAME ============ */
+        .phone-frame {
+            position: relative;
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            background: var(--bg-app);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @media (min-width: 480px) {
+            body { padding: 24px; }
+            .phone-frame {
+                border-radius: 50px;
+                border: 10px solid #000;
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            }
+            /* Dynamic island */
+            .phone-frame::before {
+                content: '';
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 120px;
+                height: 32px;
+                background: #000;
+                border-radius: 999px;
+                z-index: 100;
+                pointer-events: none;
+            }
+        }
+
+        /* ============ SCROLL AREA ============ */
+        .app-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 48px 16px 110px;
+            scrollbar-width: none;
+        }
+        .app-scroll::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 479px) {
+            .app-scroll { padding-top: 20px; }
+        }
+
+        /* ============ HERO CARD ============ */
+        .hero-card {
+            position: relative;
+            background: linear-gradient(to bottom, var(--bg-hero-1), var(--bg-hero-2));
+            border-radius: var(--radius-hero);
+            padding: 20px;
+            box-shadow: var(--shadow-card);
+            color: #fff;
+        }
+
+        /* Top row: avatar, store switcher, bell */
+        .hero-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #333, #555);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .avatar:active { transform: scale(0.92); }
+
+        /* Store dropdown */
+        .store-switcher { position: relative; }
+
+        .store-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            padding: 6px 14px;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .store-btn:hover { background: rgba(255,255,255,0.12); }
+
+        .store-btn svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.2s ease;
+        }
+        .store-btn.open svg { transform: rotate(180deg); }
+
+        .store-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            transform-origin: top center;
+            width: 180px;
+            background: rgba(30, 30, 34, 0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 50;
+        }
+        .store-menu.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .store-option {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .store-option:hover { background: rgba(255,255,255,0.1); }
+        .store-option .pts-badge {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Bell button */
+        .bell-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+        .bell-btn:hover { background: rgba(255,255,255,0.15); }
+        .bell-btn:active { transform: scale(0.92); }
+
+        .bell-btn svg { width: 19px; height: 19px; color: rgba(255,255,255,0.9); }
+
+        .bell-dot {
+            position: absolute;
+            top: 9px;
+            right: 9px;
+            width: 7px;
+            height: 7px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+
+        /* Big points number */
+        .points-section {
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .points-number {
+            font-size: 56px;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            background: linear-gradient(90deg, #ffffff 55%, rgba(255,255,255,0.35) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .points-subtitle {
+            margin-top: 10px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            font-weight: 500;
+        }
+
+        /* Action row */
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 28px 0;
+        }
+
+        .glass-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            padding: 12px 22px;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+        .glass-btn:hover { background: rgba(255,255,255,0.14); }
+        .glass-btn:active { transform: scale(0.95); }
+
+        .glass-btn svg { width: 16px; height: 16px; color: rgba(255,255,255,0.9); }
+
+        .qr-circle-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+        .qr-circle-btn:hover { background: rgba(255,255,255,0.14); }
+        .qr-circle-btn:active { transform: scale(0.92); }
+
+        .qr-circle-btn svg { width: 24px; height: 24px; color: #fff; }
+
+        /* Member pill */
+        .member-pill {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .member-pill-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 7px 16px;
+            border-radius: var(--radius-btn);
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Pulsing green dot */
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        /* ============ WHITE CONTENT AREA ============ */
+        .content-section { margin-top: 28px; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4px;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .view-all {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+        .view-all:hover { color: var(--text-primary); background: var(--card-gray); }
+
+        /* Reward progress card */
+        .reward-card {
+            background: var(--card-gray);
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .reward-progress-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: var(--radius-btn);
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #111;
+            border-radius: var(--radius-btn);
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reward-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Stamp circles row */
+        .stamp-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            justify-content: space-between;
+        }
+
+        .stamp {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.4s ease;
+        }
+        .stamp.filled {
+            background: #111;
+            border-color: #111;
+            color: #fff;
+        }
+
+        /* Activity list */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card-gray);
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: 18px;
+            padding: 14px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: background 0.2s ease;
+        }
+        .activity-item:hover { background: var(--card-gray-hover); }
+
+        .activity-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-icon svg { width: 17px; height: 17px; color: #555; }
+
+        .activity-info { flex: 1; min-width: 0; }
+
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .activity-points {
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .activity-points.positive { color: #111; }
+        .activity-points.negative { color: var(--text-muted); }
+
+        /* ============ BOTTOM NAV ============ */
+        .bottom-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            max-width: 330px;
+            z-index: 40;
+        }
+
+        .nav-pill {
+            background: rgba(18, 18, 20, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-btn);
+            padding: 10px 12px;
+            box-shadow: var(--shadow-nav);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .nav-btn {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255,255,255,0.45);
+            transition: color 0.25s ease;
+        }
+
+        .nav-btn svg {
+            width: 21px;
+            height: 21px;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-btn:hover svg { transform: translateY(-1px); }
+
+        /* Active circular highlight */
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.16);
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+        }
+
+        .nav-btn.active { color: #fff; }
+        .nav-btn.active::before {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* ============ BOTTOM SHEET ============ */
+        .sheet-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .sheet-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 28px 28px 0 0;
+            padding: 12px 24px 36px;
+            z-index: 70;
+            transform: translateY(105%);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        }
+        .bottom-sheet.open { transform: translateY(0); }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 999px;
+            margin: 0 auto 20px;
+            cursor: grab;
+        }
+
+        .sheet-title {
+            font-size: 19px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .sheet-subtitle {
+            font-size: 14px;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: var(--card-gray);
+            border-radius: var(--radius-card);
+            margin-bottom: 16px;
+        }
+
+        .qr-note {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .sheet-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        .sheet-btn:hover { background: #333; }
+        .sheet-btn:active { transform: scale(0.97); }
+
+        .sheet-close {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 8px;
+            border-radius: 14px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .sheet-close:hover { background: var(--card-gray); color: var(--text-primary); }
+
+        /* ============ REDUCED MOTION ============ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============ GATE (login / phone entry) ============ */
+        .gate { position:absolute; inset:0; z-index:90; background:var(--bg-app); display:flex; align-items:center; padding:24px; }
+        .gate.hidden { display:none; }
+        .gate-card { width:100%; background:linear-gradient(to bottom,#000,#1a1a1a); border-radius:36px; padding:32px 24px 28px; color:#fff; box-shadow:0 4px 20px rgba(0,0,0,.08); }
+        .gate-title { font-size:26px; font-weight:700; text-align:center; letter-spacing:-.02em; }
+        .gate-sub { margin:8px 0 24px; text-align:center; font-size:14px; color:rgba(255,255,255,.55); line-height:1.5; }
+        .gate-input { width:100%; padding:16px 18px; margin-bottom:12px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:18px; color:#fff; font-size:17px; font-family:inherit; outline:none; transition:border-color .2s ease; }
+        .gate-input:focus { border-color:rgba(255,255,255,.4); }
+        .gate-input::placeholder { color:rgba(255,255,255,.35); }
+        .gate-error { min-height:20px; margin-bottom:8px; font-size:13px; color:#f87171; text-align:center; line-height:1.4; }
+        .gate-btn { width:100%; padding:16px; background:#fff; color:#000; border:none; border-radius:18px; font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; transition:transform .15s ease, opacity .2s ease; }
+        .gate-btn:active { transform:scale(.97); }
+        .gate-btn:disabled { opacity:.5; cursor:default; }
+
+        /* ============ LIQUID GLASS (iOS 26 style, pure CSS) ============ */
+        :root {
+            --lg-fill: linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.13) 100%);
+            --lg-border: rgba(255,255,255,0.2);
+            --lg-edge: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 14px rgba(255,255,255,0.07);
+            --lg-blur: blur(18px) saturate(180%) brightness(1.1);
+            --lg-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Soft monochrome light blobs inside the black card, so the glass has something to bend */
+        .hero-card, .gate-card {
+            background:
+                radial-gradient(circle at 18% 80%, rgba(255,255,255,0.20), transparent 38%),
+                radial-gradient(circle at 88% 72%, rgba(255,255,255,0.15), transparent 34%),
+                radial-gradient(circle at 62% 14%, rgba(255,255,255,0.10), transparent 42%),
+                linear-gradient(to bottom, var(--bg-hero-1), var(--bg-hero-2));
+        }
+
+        /* Every glass control */
+        .glass-btn, .qr-circle-btn, .bell-btn, .avatar, .store-btn,
+        .member-pill-inner, .today-pill, .gate-input {
+            background: var(--lg-fill);
+            backdrop-filter: var(--lg-blur);
+            -webkit-backdrop-filter: var(--lg-blur);
+            border: 1px solid var(--lg-border);
+            box-shadow: var(--lg-edge), 0 8px 24px rgba(0,0,0,0.35);
+        }
+        .glass-btn, .qr-circle-btn, .bell-btn, .avatar, .store-btn {
+            transition: transform 0.35s var(--lg-spring), background 0.25s ease, box-shadow 0.25s ease;
+        }
+        .glass-btn:hover, .qr-circle-btn:hover, .bell-btn:hover, .store-btn:hover {
+            background: linear-gradient(145deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.09) 45%, rgba(255,255,255,0.17) 100%);
+            transform: scale(1.04);
+        }
+        .glass-btn:active, .qr-circle-btn:active, .bell-btn:active, .avatar:active, .store-btn:active {
+            transform: scale(0.94);
+        }
+
+        /* Dropdown menu */
+        .store-menu {
+            background: linear-gradient(145deg, rgba(60,60,66,0.62), rgba(24,24,28,0.62));
+            backdrop-filter: blur(26px) saturate(180%);
+            -webkit-backdrop-filter: blur(26px) saturate(180%);
+            border: 1px solid var(--lg-border);
+            box-shadow: var(--lg-edge), 0 16px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Floating nav: see-through, content scrolls underneath */
+        .nav-pill {
+            background: linear-gradient(145deg, rgba(60,60,66,0.58), rgba(14,14,16,0.52));
+            backdrop-filter: blur(24px) saturate(190%);
+            -webkit-backdrop-filter: blur(24px) saturate(190%);
+            border: 1px solid var(--lg-border);
+            box-shadow: var(--lg-edge), 0 12px 34px rgba(0,0,0,0.3);
+        }
+        .nav-btn.active::before {
+            background: linear-gradient(145deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+
+        /* Bottom sheets: frosted white glass */
+        .bottom-sheet {
+            background: linear-gradient(to bottom, rgba(255,255,255,0.86), rgba(255,255,255,0.74));
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-top: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.18);
+        }
+
+        /* Browsers without backdrop-filter get solid, readable fallbacks */
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .nav-pill, .store-menu { background: rgba(24,24,28,0.96); }
+            .bottom-sheet { background: #fff; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glass-btn, .qr-circle-btn, .bell-btn, .avatar, .store-btn { transition: none; }
+            .glass-btn:hover, .qr-circle-btn:hover, .bell-btn:hover, .store-btn:hover { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ IPHONE FRAME ============ -->
+    <div class="phone-frame">
+        <!-- ============ PHONE ENTRY ============ -->
+        <div class="gate" id="gate">
+            <div class="gate-card">
+                <div class="gate-title">Your loyalty card</div>
+                <div class="gate-sub">Enter your phone number to see your points</div>
+                <input class="gate-input" id="gate-phone" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX" autocomplete="tel">
+                <div class="gate-error" id="gate-error"></div>
+                <button class="gate-btn" id="gate-btn">Show my card</button>
+            </div>
+        </div>
+
+
+        <!-- Scrollable app content -->
+        <div class="app-scroll" id="app-scroll">
+
+            <!-- ============ HERO CARD ============ -->
+            <div class="hero-card">
+
+                <!-- Top row -->
+                <div class="hero-top">
+                    <!-- Avatar with customer initials -->
+                    <div class="avatar" id="avatar" title="Profile">JD</div>
+
+                    <!-- Store switcher dropdown -->
+                    <div class="store-switcher">
+                        <button class="store-btn" id="store-btn">
+                            <span id="current-store-name">Fruity Bros</span>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="store-menu" id="store-menu">
+                            <!-- Store options injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Bell button -->
+                    <button class="bell-btn" id="bell-btn" title="Notifications">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="bell-dot"></span>
+                    </button>
+                </div>
+
+                <!-- Big points number -->
+                <div class="points-section">
+                    <div class="points-number" id="points-number">0 pts</div>
+                    <div class="points-subtitle" id="points-subtitle">80 pts to your next reward</div>
+                </div>
+
+                <!-- Action row -->
+                <div class="action-row">
+                    <!-- Redeem -->
+                    <button class="glass-btn" id="redeem-btn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 010 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                        </svg>
+                        <span>Redeem</span>
+                    </button>
+
+                    <!-- QR code (center, circular) -->
+                    <button class="qr-circle-btn" id="qr-btn" title="Show QR code">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm8-2h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm2-2h2v2h-2v-2zm2 2h2v2h-2v-2z"/>
+                        </svg>
+                    </button>
+
+                    <!-- Review -->
+                    <button class="glass-btn" id="review-btn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.935 9.101c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        <span>Review</span>
+                    </button>
+                </div>
+
+                <!-- Member pill -->
+                <div class="member-pill">
+                    <div class="member-pill-inner">
+                        <span class="pulse-dot"></span>
+                        <span>Active member</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============ REWARD PROGRESS ============ -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Your reward</h2>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-progress-label" id="reward-progress-label">450 / 500 pts</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="reward-name" id="reward-name">Free coffee</div>
+                    <!-- 10 stamp circles -->
+                    <div class="stamp-row" id="stamp-row">
+                        <!-- Stamp circles injected by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ RECENT ACTIVITY ============ -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent activity</h2>
+                    <button class="view-all" id="view-all-btn">View all</button>
+                </div>
+                <div class="activity-list" id="activity-list">
+                    <!-- Activity rows injected by JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============ BOTTOM NAVIGATION ============ -->
+        <div class="bottom-nav">
+            <div class="nav-pill">
+                <!-- Home (active) -->
+                <button class="nav-btn active" data-tab="home" title="Home">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                </button>
+                <!-- Rewards -->
+                <button class="nav-btn" data-tab="rewards" title="Rewards">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 010 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                    </svg>
+                </button>
+                <!-- Review -->
+                <button class="nav-btn" data-tab="review" title="Review">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.935 9.101c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                </button>
+                <!-- Profile -->
+                <button class="nav-btn" data-tab="profile" title="Profile">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ BOTTOM SHEET ============ -->
+        <div class="sheet-backdrop" id="sheet-backdrop"></div>
+
+        <div class="bottom-sheet" id="bottom-sheet">
+            <div class="sheet-handle" id="sheet-handle"></div>
+            <div id="sheet-content">
+                <!-- Sheet content injected by JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+import { isConfigured, db, doc, getDoc, onSnapshot, collection, query, orderBy, limit } from './firebase.js';
+
+/* ============ STATE ============ */
+const PHONE_KEY = 'loyalty_phone';
+let phone = null;               // logged-in customer's phone
+let customer = null;            // customer document data
+let currentStoreId = null;
+const storeMeta = {};           // cache of stores/{id} documents
+let activityAll = [];
+let unsubCustomer = null;
+let unsubActivity = null;
+let lastShown = null;           // "storeId:points" last animated
+
+/* ============ DOM REFERENCES ============ */
+const $ = (id) => document.getElementById(id);
+const pointsNumber = $('points-number');
+const pointsSubtitle = $('points-subtitle');
+const currentStoreName = $('current-store-name');
+const storeBtn = $('store-btn');
+const storeMenu = $('store-menu');
+const rewardProgressLabel = $('reward-progress-label');
+const progressFill = $('progress-fill');
+const rewardName = $('reward-name');
+const stampRow = $('stamp-row');
+const activityList = $('activity-list');
+const sheetBackdrop = $('sheet-backdrop');
+const bottomSheet = $('bottom-sheet');
+const sheetContent = $('sheet-content');
+const sheetHandle = $('sheet-handle');
+const gate = $('gate');
+const gatePhone = $('gate-phone');
+const gateBtn = $('gate-btn');
+const gateError = $('gate-error');
+
+/* ============ HELPERS ============ */
+function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function initialsOf(name) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    return (parts.map(p => p[0]).join('').slice(0, 2) || '?').toUpperCase();
+}
+
+function storeIds() {
+    return Object.keys((customer && customer.points) || {});
+}
+
+function getStore() {
+    const id = currentStoreId;
+    const meta = storeMeta[id] || {};
+    return {
+        id,
+        name: meta.name || id || 'Loyalty Card',
+        points: (customer && customer.points && customer.points[id]) || 0,
+        rewardTarget: meta.rewardCost || 500,
+        rewardName: meta.rewardName || 'Reward',
+        reviewUrl: meta.reviewUrl || ''
+    };
+}
+
+function formatDate(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    if (ts >= startToday) {
+        return 'Today, ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
+    if (ts >= startToday - 86400000) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+/** Animates the points number counting up from 0 to target. */
+function animatePoints(target) {
+    const duration = 800;
+    const startTime = performance.now();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        pointsNumber.textContent = target + ' pts';
+        return;
+    }
+    function update(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+        pointsNumber.textContent = Math.floor(target * eased) + ' pts';
+        if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+}
+
+/* ============ RENDERING ============ */
+function renderStoreMenu() {
+    storeMenu.innerHTML = storeIds().map(id => {
+        const meta = storeMeta[id] || {};
+        return `<button class="store-option" data-id="${esc(id)}">
+                    <span>${esc(meta.name || id)}</span>
+                    <span class="pts-badge">${customer.points[id]} pts</span>
+                </button>`;
+    }).join('');
+    storeMenu.querySelectorAll('.store-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentStoreId = btn.dataset.id;
+            closeStoreMenu();
+            renderAll();
+        });
+    });
+}
+
+function renderReward() {
+    const store = getStore();
+    const pct = Math.min(100, Math.round((store.points / store.rewardTarget) * 100));
+    rewardProgressLabel.textContent = `${store.points} / ${store.rewardTarget} pts`;
+    rewardName.textContent = store.rewardName;
+    progressFill.style.width = pct + '%';
+    const filled = Math.min(10, Math.round((store.points / store.rewardTarget) * 10));
+    stampRow.innerHTML = Array.from({ length: 10 }, (_, i) =>
+        `<div class="stamp ${i < filled ? 'filled' : ''}">${i + 1}</div>`
+    ).join('');
+}
+
+function renderActivity() {
+    const icons = {
+        purchase: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
+        review: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.935 9.101c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>',
+        redeem: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 010 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>'
+    };
+    const rows = activityAll.filter(a => a.storeId === currentStoreId).slice(0, 3);
+    if (rows.length === 0) {
+        activityList.innerHTML = '<div class="activity-date" style="padding:8px 4px;">No activity yet.</div>';
+        return;
+    }
+    activityList.innerHTML = rows.map(item => `
+        <div class="activity-item">
+            <div class="activity-icon">${icons[item.type] || icons.purchase}</div>
+            <div class="activity-info">
+                <div class="activity-title">${esc(item.title)}</div>
+                <div class="activity-date">${formatDate(item.ts)}</div>
+            </div>
+            <div class="activity-points ${item.points >= 0 ? 'positive' : 'negative'}">
+                ${item.points >= 0 ? '+' : ''}${item.points} pts
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderSubtitle() {
+    const store = getStore();
+    const remaining = Math.max(0, store.rewardTarget - store.points);
+    pointsSubtitle.textContent = remaining > 0
+        ? `${remaining} pts to your next reward`
+        : `Reward ready — ${store.rewardName}!`;
+}
+
+function renderAll() {
+    const store = getStore();
+    currentStoreName.textContent = store.name;
+    $('avatar').textContent = initialsOf(customer && customer.name);
+    renderStoreMenu();
+    renderSubtitle();
+    renderReward();
+    renderActivity();
+    // Only re-run the count-up when the number actually changed
+    const key = store.id + ':' + store.points;
+    if (key !== lastShown) {
+        lastShown = key;
+        animatePoints(store.points);
+    }
+}
+
+/* ============ STORE DROPDOWN ============ */
+function openStoreMenu() { storeMenu.classList.add('open'); storeBtn.classList.add('open'); }
+function closeStoreMenu() { storeMenu.classList.remove('open'); storeBtn.classList.remove('open'); }
+storeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    storeMenu.classList.contains('open') ? closeStoreMenu() : openStoreMenu();
+});
+document.addEventListener('click', (e) => {
+    if (!storeMenu.contains(e.target)) closeStoreMenu();
+});
+
+/* ============ BOTTOM SHEET ============ */
+function setActiveTab(tab) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+}
+function openSheet(html) {
+    sheetContent.innerHTML = html;
+    sheetBackdrop.classList.add('open');
+    bottomSheet.classList.add('open');
+}
+function closeSheet() {
+    sheetBackdrop.classList.remove('open');
+    bottomSheet.classList.remove('open');
+    setActiveTab('home');
+}
+window.closeSheet = closeSheet; // used by inline onclick handlers in sheets
+sheetBackdrop.addEventListener('click', closeSheet);
+
+let touchStartY = 0;
+sheetHandle.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
+sheetHandle.addEventListener('touchmove', (e) => {
+    const delta = e.touches[0].clientY - touchStartY;
+    if (delta > 0) bottomSheet.style.transform = `translateY(${delta}px)`;
+}, { passive: true });
+sheetHandle.addEventListener('touchend', (e) => {
+    const delta = e.changedTouches[0].clientY - touchStartY;
+    bottomSheet.style.transform = '';
+    if (delta > 80) closeSheet();
+});
+
+/* ============ SHEETS ============ */
+function openQrSheet() {
+    openSheet(`
+        <div class="sheet-title">Your code</div>
+        <div class="sheet-subtitle">Show this to the cashier</div>
+        <div class="qr-container" id="qr-box"></div>
+        <div class="qr-note">${esc(phone)}</div>
+    `);
+    new QRCode($('qr-box'), {
+        text: phone, width: 200, height: 200,
+        colorDark: '#000000', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+    });
+}
+
+function openReviewSheet() {
+    const store = getStore();
+    const url = store.reviewUrl ||
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.name)}`;
+    openSheet(`
+        <div class="sheet-title">Leave a review</div>
+        <div class="sheet-subtitle">Leave a Google review and show it to the cashier for <strong>+50 points</strong></div>
+        <a class="sheet-btn" href="${esc(url)}" target="_blank" rel="noopener">Open Google review</a>
+        <button class="sheet-close" onclick="closeSheet()">Maybe later</button>
+    `);
+}
+
+function openRedeemSheet() {
+    const store = getStore();
+    const remaining = Math.max(0, store.rewardTarget - store.points);
+    openSheet(`
+        <div class="sheet-title">Redeem</div>
+        <div class="sheet-subtitle">
+            ${remaining > 0
+                ? `You need <strong>${remaining} more points</strong> for a ${esc(store.rewardName)}.`
+                : `You have enough points for a ${esc(store.rewardName)}! Show your code to the cashier.`}
+        </div>
+        <button class="sheet-btn" onclick="closeSheet()">Got it</button>
+    `);
+}
+
+function openProfileSheet() {
+    openSheet(`
+        <div class="sheet-title">${esc(customer ? customer.name : 'Profile')}</div>
+        <div class="sheet-subtitle">${esc(phone || '')}</div>
+        <button class="sheet-btn" id="switch-number">Use a different number</button>
+        <button class="sheet-close" onclick="closeSheet()">Close</button>
+    `);
+    $('switch-number').addEventListener('click', () => { closeSheet(); signOutCustomer(); });
+}
+
+function openSimpleSheet(title, text) {
+    openSheet(`
+        <div class="sheet-title">${title}</div>
+        <div class="sheet-subtitle">${text}</div>
+        <button class="sheet-btn" onclick="closeSheet()">OK</button>
+    `);
+}
+
+/* ============ BUTTON WIRING ============ */
+$('qr-btn').addEventListener('click', openQrSheet);
+$('review-btn').addEventListener('click', openReviewSheet);
+$('redeem-btn').addEventListener('click', openRedeemSheet);
+$('avatar').addEventListener('click', openProfileSheet);
+$('bell-btn').addEventListener('click', () => openSimpleSheet('Notifications', 'No new notifications right now.'));
+$('view-all-btn').addEventListener('click', () => openSimpleSheet('Activity', 'Full activity history is coming soon.'));
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        setActiveTab(tab);
+        if (tab === 'review') openReviewSheet();
+        else if (tab === 'profile') openProfileSheet();
+        else if (tab === 'rewards') openSimpleSheet('Rewards', 'Coming soon in the next version.');
+    });
+});
+
+/* ============ DATA (FIREBASE) ============ */
+async function loadStoreMeta(ids) {
+    await Promise.all(ids.filter(id => !storeMeta[id]).map(async id => {
+        try {
+            const snap = await getDoc(doc(db, 'stores', id));
+            storeMeta[id] = snap.exists() ? snap.data() : {};
+        } catch (e) { storeMeta[id] = {}; }
+    }));
+}
+
+function stopListening() {
+    if (unsubCustomer) unsubCustomer();
+    if (unsubActivity) unsubActivity();
+    unsubCustomer = unsubActivity = null;
+}
+
+/** Looks the customer up and starts live listeners. Returns false if no card exists. */
+async function startSession(p) {
+    const first = await getDoc(doc(db, 'customers', p));
+    if (!first.exists()) return false;
+
+    stopListening();
+    phone = p;
+    localStorage.setItem(PHONE_KEY, p);
+
+    unsubCustomer = onSnapshot(doc(db, 'customers', p), async (snap) => {
+        if (!snap.exists()) return;
+        customer = snap.data();
+        const ids = storeIds();
+        await loadStoreMeta(ids);
+        if (!ids.includes(currentStoreId)) currentStoreId = ids[0] || null;
+        renderAll();
+        gate.classList.add('hidden');
+    });
+
+    unsubActivity = onSnapshot(
+        query(collection(db, 'customers', p, 'activity'), orderBy('ts', 'desc'), limit(30)),
+        (snap) => { activityAll = snap.docs.map(d => d.data()); renderActivity(); }
+    );
+    return true;
+}
+
+function signOutCustomer() {
+    stopListening();
+    localStorage.removeItem(PHONE_KEY);
+    phone = null; customer = null; currentStoreId = null; lastShown = null;
+    gatePhone.value = '';
+    gateError.textContent = '';
+    gate.classList.remove('hidden');
+}
+
+/* ============ GATE (enter phone number) ============ */
+gatePhone.addEventListener('input', () => {
+    gatePhone.value = gatePhone.value.replace(/\D/g, '').slice(0, 11);
+    gateError.textContent = '';
+});
+
+async function submitGate() {
+    const p = gatePhone.value.trim();
+    if (!/^01\d{9}$/.test(p)) {
+        gateError.textContent = 'Enter your 11-digit phone number starting with 01.';
+        return;
+    }
+    gateBtn.disabled = true;
+    gateBtn.textContent = 'Checking…';
+    try {
+        const ok = await startSession(p);
+        if (!ok) gateError.textContent = 'No card found for this number yet. Ask the cashier to add you on your next purchase.';
+    } catch (e) {
+        gateError.textContent = 'Could not connect. Check your internet and try again.';
+    }
+    gateBtn.disabled = false;
+    gateBtn.textContent = 'Show my card';
+}
+gateBtn.addEventListener('click', submitGate);
+gatePhone.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitGate(); });
+
+/* ============ INIT ============ */
+if (!isConfigured) {
+    gateError.textContent = 'Setup needed: paste your Firebase config into firebase-config.js.';
+    gateBtn.disabled = true;
+} else {
+    const saved = localStorage.getItem(PHONE_KEY);
+    if (saved) {
+        gatePhone.value = saved;
+        startSession(saved).then(ok => { if (!ok) signOutCustomer(); }).catch(() => {});
+    }
+}
+</script>
+</body>
+</html>

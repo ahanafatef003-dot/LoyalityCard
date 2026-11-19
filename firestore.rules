@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only the cashier account can write. Replace the email below with
+    // the exact email of the cashier user you created in Authentication.
+    function isCashier() {
+      return request.auth != null
+          && request.auth.token.email == "CASHIER_EMAIL_HERE";
+    }
+
+    // Store settings (name, reward). Everyone can read, cashier can write.
+    match /stores/{storeId} {
+      allow read: if true;
+      allow write: if isCashier();
+    }
+
+    // Customer cards. A customer can read ONE card if they know the phone number,
+    // but nobody can list all customers except the cashier.
+    match /customers/{phone} {
+      allow get: if true;
+      allow list: if isCashier();
+      allow create, update, delete: if isCashier();
+
+      match /activity/{activityId} {
+        allow read: if true;
+        allow write: if isCashier();
+      }
+    }
+
+    // Cashier-only daily log.
+    match /log/{logId} {
+      allow read, write: if isCashier();
+    }
+  }
+}
