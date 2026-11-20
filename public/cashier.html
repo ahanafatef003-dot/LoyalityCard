@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashier - Loyalty</title>
     <style>
+
+
+
         /* ============ CSS VARIABLES ============ */
         :root {
             --bg-page: #f7f7f7;
@@ -686,9 +689,246 @@
         .scan-frame { position:relative; width:230px; height:230px; border-radius:28px; border:3px solid rgba(255,255,255,0.9); box-shadow:0 0 0 999px rgba(0,0,0,0.55); }
         .scan-msg { position:absolute; left:20px; right:20px; bottom:110px; text-align:center; color:#fff; font-size:15px; font-weight:500; line-height:1.4; text-shadow:0 1px 6px rgba(0,0,0,0.6); }
         .scan-close { position:absolute; left:50%; bottom:40px; transform:translateX(-50%); padding:14px 34px; border-radius:999px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.16); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); color:#fff; font-size:16px; font-weight:600; font-family:inherit; cursor:pointer; }
+    
+
+        
+
+        
+
+        /* ============ CLEAN DEDICATED PAGES (HISTORY & SETTINGS) ============ */
+        .subpage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding: 4px 2px;
+        }
+        .subpage-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+        .subpage-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--card-gray);
+            padding: 5px 11px;
+            border-radius: 999px;
+        }
+        .subpage-view {
+            display: none;
+        }
+        .subpage-view.active {
+            display: block;
+        }
+        .ref-card {
+            background: #ffffff;
+            border: 1px solid #eceef2;
+            border-radius: 24px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            margin-bottom: 14px;
+        }
+        .ref-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .ref-pills {
+            display: inline-flex;
+            background: #f3f4f6;
+            padding: 3px;
+            border-radius: 999px;
+            gap: 2px;
+        }
+        .ref-pill-btn {
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ref-pill-btn.active {
+            background: #111111;
+            color: #ffffff;
+        }
+        .ref-type-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .ref-type-btn {
+            flex: 1;
+            border: 1px solid #e5e7eb;
+            background: #fafafa;
+            color: #6b7280;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ref-type-btn.active {
+            background: #111111;
+            border-color: #111111;
+            color: #ffffff;
+        }
+        .ref-search-input, .page-input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .ref-search-input:focus, .page-input:focus {
+            border-color: #111111;
+            background: #ffffff;
+        }
+        .ref-list {
+            display: flex;
+            flex-direction: column;
+        }
+        .ref-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 4px;
+            border-bottom: 1px solid #f1f3f5;
+        }
+        .ref-row:last-child {
+            border-bottom: none;
+            padding-bottom: 4px;
+        }
+        .ref-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            flex-shrink: 0;
+        }
+        .ref-avatar.tone-0 { background: #e0f2fe; color: #0369a1; }
+        .ref-avatar.tone-1 { background: #dcfce7; color: #15803d; }
+        .ref-avatar.tone-2 { background: #fef3c7; color: #b45309; }
+        .ref-avatar.tone-3 { background: #f3e8ff; color: #7e22ce; }
+        .ref-avatar.tone-4 { background: #ffe4e6; color: #be123c; }
+        .ref-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .ref-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ref-sub {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ref-time {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+        .ref-badge {
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .ref-badge.purchase {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .ref-badge.redeem {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .page-card {
+            background: var(--card-gray);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-card);
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 16px;
+        }
+        .page-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .page-card-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .secondary-action-btn {
+            width: 100%;
+            padding: 12px 14px;
+            background: #ffffff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .primary-action-btn {
+            width: 100%;
+            padding: 14px;
+            background: #111111;
+            color: #ffffff;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .status-msg {
+            min-height: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+        }
+
     </style>
 </head>
-<body>
+
+
     <!-- ============ IPHONE FRAME ============ -->
     <div class="phone-frame">
         <!-- ============ QR SCANNER ============ -->
@@ -710,6 +950,10 @@
             </div>
         </div>
         <div class="app-scroll" id="app-scroll">
+
+            <!-- ============ PAGE 1: ADD POINTS (WITH HERO CARD) ============ -->
+            <div id="page-add">
+
             <!-- ============ HERO CARD ============ -->
             <div class="hero-card">
                 <div class="hero-top">
@@ -722,97 +966,182 @@
                         <span id="today-count">0 customers today</span>
                     </div>
                 </div>
-                <div class="hero-heading">Add points</div>
-                <div class="hero-sub">Enter phone number and bill amount</div>
+                <div class="hero-heading" id="hero-heading">Add points</div>
+                <div class="hero-sub" id="hero-sub">Enter phone number and bill amount</div>
             </div>
-            <!-- ============ FORM ============ -->
-            <div class="form-section" id="form-section">
-                <!-- Phone -->
-                <div class="field-group">
-                    <label class="field-label" for="phone-input">Customer phone</label>
-                    <div class="input-wrap" id="phone-wrap">
-                        <input
-                            class="big-input"
-                            id="phone-input"
-                            type="tel"
-                            inputmode="numeric"
-                            placeholder="01XXXXXXXXX"
-                            autocomplete="off"
-                            maxlength="11"
-                        >
-                        <button class="scan-btn" id="scan-btn" type="button" aria-label="Scan customer QR code">
-                            <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2M7 12h10"/></svg>
+
+            
+
+<!-- ============ PAGE 1: ADD POINTS ============ -->
+            <div id="page-add">
+                <!-- ============ FORM ============ -->
+                <div class="form-section" id="form-section">
+                    <!-- Phone -->
+                    <div class="field-group">
+                        <label class="field-label" for="phone-input">Customer phone</label>
+                        <div class="input-wrap" id="phone-wrap">
+                            <input
+                                class="big-input"
+                                id="phone-input"
+                                type="tel"
+                                inputmode="numeric"
+                                placeholder="01XXXXXXXXX"
+                                autocomplete="off"
+                                maxlength="11"
+                            >
+                            <button class="scan-btn" id="scan-btn" type="button" aria-label="Scan customer QR code">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 012-2h2M16 4h2a2 2 0 012 2v2M20 16v2a2 2 0 01-2 2h-2M8 20H6a2 2 0 01-2-2v-2M7 12h10"/></svg>
+                            </button>
+                        </div>
+                        <div class="lookup-result" id="lookup-result"></div>
+                        <div class="field-error" id="phone-error"></div>
+                    </div>
+                    <!-- Bill amount -->
+                    <div class="field-group">
+                        <label class="field-label" for="bill-input">Bill amount</label>
+                        <div class="input-wrap" id="bill-wrap">
+                            <span class="input-prefix">&#2547;</span>
+                            <input
+                                class="big-input"
+                                id="bill-input"
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="0"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="field-error" id="bill-error"></div>
+                    </div>
+                    <!-- Quick Bill Presets -->
+                    <div class="quick-presets">
+                        <button type="button" class="preset-chip" data-amt="100">&#2547;100</button>
+                        <button type="button" class="preset-chip" data-amt="200">&#2547;200</button>
+                        <button type="button" class="preset-chip" data-amt="500">&#2547;500</button>
+                        <button type="button" class="preset-chip" data-amt="1000">&#2547;1000</button>
+                    </div>
+                    <!-- Live preview -->
+                    <div class="preview-line" id="preview-line" style="visibility:hidden;">
+                        <span class="dot"></span>
+                        <span>This will add <strong id="preview-points">+0 pts</strong></span>
+                    </div>
+                    <!-- Reward-ready pill -->
+                    <div class="reward-pill" id="reward-pill">
+                        <div class="reward-pill-left">
+                            <span class="dot"></span>
+                            <span id="reward-pill-text">Reward ready: Free coffee</span>
+                        </div>
+                        <button class="redeem-btn" id="redeem-btn">Redeem</button>
+                    </div>
+                    <!-- Confirm -->
+                    <button class="confirm-btn" id="confirm-btn" disabled>Confirm</button>
+                </div>
+                <!-- ============ SUCCESS STATE ============ -->
+                <div class="success-card" id="success-card">
+                    <div class="success-check">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="success-title" id="success-title">+40 pts added to Rahim</div>
+                    <div class="success-sub" id="success-sub">New total: 460 pts</div>
+                    <div class="success-actions">
+                        <button class="next-btn" id="next-btn">Next customer</button>
+                        <button class="undo-btn" id="undo-btn">
+                            Undo <span class="undo-countdown" id="undo-countdown"></span>
                         </button>
                     </div>
-                    <div class="lookup-result" id="lookup-result"></div>
-                    <div class="field-error" id="phone-error"></div>
                 </div>
-                <!-- Bill amount -->
-                <div class="field-group">
-                    <label class="field-label" for="bill-input">Bill amount</label>
-                    <div class="input-wrap" id="bill-wrap">
-                        <span class="input-prefix">&#2547;</span>
-                        <input
-                            class="big-input"
-                            id="bill-input"
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="0"
-                            autocomplete="off"
-                        >
+                <!-- ============ TODAY'S ACTIVITY ============ -->
+                <div class="activity-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Today</h2>
                     </div>
-                    <div class="field-error" id="bill-error"></div>
-                </div>
-                <!-- Quick Bill Presets -->
-                <div class="quick-presets">
-                    <button type="button" class="preset-chip" data-amt="100">৳100</button>
-                    <button type="button" class="preset-chip" data-amt="200">৳200</button>
-                    <button type="button" class="preset-chip" data-amt="500">৳500</button>
-                    <button type="button" class="preset-chip" data-amt="1000">৳1000</button>
-                </div>
-                <!-- Live preview -->
-                <div class="preview-line" id="preview-line" style="visibility:hidden;">
-                    <span class="dot"></span>
-                    <span>This will add <strong id="preview-points">+0 pts</strong></span>
-                </div>
-                <!-- Reward-ready pill -->
-                <div class="reward-pill" id="reward-pill">
-                    <div class="reward-pill-left">
-                        <span class="dot"></span>
-                        <span id="reward-pill-text">Reward ready: Free coffee</span>
+                    <div class="activity-list" id="activity-list">
+                        <div class="empty-note" id="empty-note">No activity yet today.</div>
                     </div>
-                    <button class="redeem-btn" id="redeem-btn">Redeem</button>
-                </div>
-                <!-- Confirm -->
-                <button class="confirm-btn" id="confirm-btn" disabled>Confirm</button>
-            </div>
-            <!-- ============ SUCCESS STATE ============ -->
-            <div class="success-card" id="success-card">
-                <div class="success-check">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-                <div class="success-title" id="success-title">+40 pts added to Rahim</div>
-                <div class="success-sub" id="success-sub">New total: 460 pts</div>
-                <div class="success-actions">
-                    <button class="next-btn" id="next-btn">Next customer</button>
-                    <button class="undo-btn" id="undo-btn">
-                        Undo <span class="undo-countdown" id="undo-countdown"></span>
-                    </button>
                 </div>
             </div>
-            <!-- ============ TODAY'S ACTIVITY ============ -->
-            <div class="activity-section">
-                <div class="section-header">
-                    <h2 class="section-title">Today</h2>
+
+            
+
+            
+            </div>
+
+
+            <!-- ============ PAGE 2: CLEAN HISTORY PAGE (NO HERO CARD, NO PDF CARD) ============ -->
+            <div class="subpage-view" id="page-history">
+                <div class="subpage-header">
+                    <div class="subpage-title">History</div>
+                    <div class="subpage-badge" id="history-count-badge">0 entries</div>
                 </div>
-                <div class="activity-list" id="activity-list">
-                    <div class="empty-note" id="empty-note">No activity yet today.</div>
+
+                <div class="ref-card">
+                    <div class="ref-top-bar">
+                        <div class="ref-pills">
+                            <button type="button" class="ref-pill-btn active" id="scope-today-btn">Today</button>
+                            <button type="button" class="ref-pill-btn" id="scope-all-btn">All</button>
+                        </div>
+                    </div>
+
+                    <div class="ref-type-row">
+                        <button type="button" class="ref-type-btn active" data-htype="all">All</button>
+                        <button type="button" class="ref-type-btn" data-htype="purchase">Points</button>
+                        <button type="button" class="ref-type-btn" data-htype="redeem">Redeemed</button>
+                    </div>
+
+                    <input class="ref-search-input" id="history-search" type="search" placeholder="Search name or phone..." autocomplete="off">
+
+                    <div class="ref-list" id="ref-history-list">
+                        <div class="empty-note">No activity yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PAGE 3: CLEAN SETTINGS PAGE (NO HERO CARD) ============ -->
+            <div class="subpage-view" id="page-settings">
+                <div class="subpage-header">
+                    <div class="subpage-title">Settings</div>
+                    <div class="subpage-badge">Store</div>
+                </div>
+
+                <div class="page-card">
+                    <div class="page-card-title">Store Settings</div>
+                    <div class="page-card-sub">Changes save to Firestore and update customer cards.</div>
+
+                    <div class="field-group" style="margin-bottom:12px;">
+                        <label class="field-label" for="page-reward-name">Free reward name</label>
+                        <input class="page-input" id="page-reward-name" type="text" placeholder="Free coffee" style="margin-bottom:0;">
+                    </div>
+
+                    <div style="display:flex;gap:8px;margin-bottom:12px;">
+                        <div style="flex:1;">
+                            <label class="field-label" for="page-reward-cost">Points needed</label>
+                            <input class="page-input" id="page-reward-cost" type="number" min="1" step="1" placeholder="500" style="margin-bottom:0;">
+                        </div>
+                        <div style="flex:1;">
+                            <label class="field-label" for="page-taka-per-point">Taka per 1 point</label>
+                            <input class="page-input" id="page-taka-per-point" type="number" min="1" step="1" placeholder="10" style="margin-bottom:0;">
+                        </div>
+                    </div>
+
+                    <div class="field-group" style="margin-bottom:14px;">
+                        <label class="field-label" for="page-review-url">Google review link</label>
+                        <input class="page-input" id="page-review-url" type="url" placeholder="https://g.page/r/..." style="margin-bottom:0;">
+                    </div>
+
+                    <button type="button" class="primary-action-btn" id="page-save-cfg-btn">Save settings</button>
+                    <div class="status-msg" id="page-cfg-status"></div>
+                </div>
+
+                <div class="page-card">
+                    <div class="page-card-title">Cashier Account</div>
+                    <div class="page-card-sub" id="settings-account-label">Signed in</div>
+                    <button type="button" class="secondary-action-btn" id="page-sign-out-btn">Sign out</button>
                 </div>
             </div>
         </div>
-        <!-- ============ BOTTOM NAV ============ -->
+
+<!-- ============ BOTTOM NAV ============ -->
         <div class="bottom-nav">
             <div class="nav-pill">
                 <button class="nav-btn active" data-tab="add" title="Add points">
@@ -833,31 +1162,40 @@
                 </button>
             </div>
         </div>
-        <!-- ============ BOTTOM SHEET ============ -->
+        <!-- ============ BOTTOM SHEET (ONLY FOR REDEEM CONFIRMATION) ============ -->
         <div class="sheet-backdrop" id="sheet-backdrop"></div>
         <div class="bottom-sheet" id="bottom-sheet">
             <div class="sheet-handle" id="sheet-handle"></div>
             <div id="sheet-content"></div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
-    <script type="module">
+    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script type="module">
+
 import {
     isConfigured, STORE, db, auth, doc, getDoc, setDoc, onSnapshot, collection,
-    query, orderBy, where, runTransaction,
+    query, orderBy, where, limit, runTransaction,
     onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from './firebase.js';
 
 /* ============ STATE ============ */
-let currentCustomer = null;     // customer doc for the typed phone (null = new or unknown)
-let lookupFor = '';             // phone that currentCustomer was resolved for
-let todayLog = [];              // today's log entries, newest first
+let currentCustomer = null;
+let lookupFor = '';
+let todayLog = [];
+let allRecentLog = [];
 let todayCount = 0;
-let lastTransaction = null;     // for the Undo button
+let lastTransaction = null;
 let undoTimer = null;
 let unsubLog = null;
+let unsubAllLog = null;
 let busy = false;
-const customerCache = new Map(); // Local cache for instant repeat lookups
+let currentPage = 'add';
+let historyScope = 'today'; // 'today' | 'all'
+let historyTypeFilter = 'all'; // 'all' | 'purchase' | 'redeem'
+const customerCache = new Map();
+
 let storeConfig = {
     name: STORE.name,
     rewardCost: STORE.rewardCost || 500,
@@ -909,8 +1247,26 @@ function esc(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 function pointsForBill(amount) { return Math.floor(amount / activeTakaPerPoint()); }
-function timeOf(ts) { return new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
+function timeOf(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const tStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    if (ts >= startToday) return 'Today, ' + tStr;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + tStr;
+}
 function storePoints(c) { return (c && c.points && c.points[STORE.id]) || 0; }
+function storeVisits(c) { return (c && c.visits && c.visits[STORE.id]) || 0; }
+function ordinalLabel(n) {
+    const num = Math.max(1, Number(n) || 1);
+    const mod100 = num % 100;
+    if (mod100 >= 11 && mod100 <= 13) return `${num}th time`;
+    const mod10 = num % 10;
+    if (mod10 === 1) return `${num}st time`;
+    if (mod10 === 2) return `${num}nd time`;
+    if (mod10 === 3) return `${num}rd time`;
+    return `${num}th time`;
+}
 function isValidPhone(p) { return /^01\d{9}$/.test(p); }
 function isValidBill(b) { return b > 0; }
 function setError(wrapEl, errorEl, message) {
@@ -924,65 +1280,149 @@ function setError(wrapEl, errorEl, message) {
     }
 }
 
-/* ============ LOGIN ============ */
+/* ============ DEDICATED PAGE NAVIGATION ============ */
+function switchPage(page) {
+    currentPage = page;
+    $('page-add').style.display = page === 'add' ? '' : 'none';
+    $('page-history').classList.toggle('active', page === 'history');
+    $('page-settings').classList.toggle('active', page === 'settings');
+
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === page));
+
+    if (page === 'history') {
+        renderHistoryPage();
+    } else if (page === 'settings') {
+        populateSettingsPage();
+    }
+    $('app-scroll').scrollTop = 0;
+}
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        if (tab === 'add' || tab === 'history' || tab === 'settings') {
+            switchPage(tab);
+        }
+    });
+});
+
+/* ============ INSTANT LOGIN / LOGOUT (REAL DATA, NO BLOCKING LOADER) ============ */
 function friendlyAuthError(code) {
-    if (code === 'auth/network-request-failed') return 'No internet. Please try again.';
-    if (code === 'auth/too-many-requests') return 'Too many tries. Wait a minute and try again.';
+    if (code === 'auth/network-request-failed') return 'No internet.';
+    if (code === 'auth/too-many-requests') return 'Too many tries. Wait a bit.';
     return 'Wrong email or password.';
 }
-async function submitLogin() {
+function submitLogin() {
     const email = gateEmail.value.trim();
     const pass = gatePassword.value;
     if (!email || !pass) { gateError.textContent = 'Enter email and password.'; return; }
-    gateBtn.disabled = true;
-    gateBtn.textContent = 'Signing in...';
     gateError.textContent = '';
-    try {
-        await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) {
+    // Instant UI transition; signInWithEmailAndPassword runs in background
+    gate.classList.add('hidden');
+    gatePassword.value = '';
+    signInWithEmailAndPassword(auth, email, pass).catch((e) => {
+        gate.classList.remove('hidden');
         gateError.textContent = friendlyAuthError(e.code);
-    }
-    gateBtn.disabled = false;
-    gateBtn.textContent = 'Sign in';
+    });
 }
 gateBtn.addEventListener('click', submitLogin);
 gatePassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitLogin(); });
 
-/* ============ DATABASE ACTIONS ============ */
-async function applyPoints({ phone, pts, bill, type, title }) {
+/* ============ OPTIMISTIC LOCAL LOG + BACKGROUND FIRESTORE WRITE ============ */
+function pushLocalLogEntry(entry) {
+    todayLog = [entry, ...todayLog];
+    allRecentLog = [entry, ...allRecentLog];
+    if (entry.type === 'purchase') {
+        todayCount += 1;
+        updateTodayCount();
+    }
+    renderActivity();
+    if (currentPage === 'history') renderHistoryPage();
+}
+
+function removeLocalLogEntry(logId) {
+    const removed = todayLog.find(e => e.logId === logId) || allRecentLog.find(e => e.logId === logId);
+    todayLog = todayLog.filter(e => e.logId !== logId);
+    allRecentLog = allRecentLog.filter(e => e.logId !== logId);
+    if (removed && removed.type === 'purchase') {
+        todayCount = Math.max(0, todayCount - 1);
+        updateTodayCount();
+    }
+    renderActivity();
+    if (currentPage === 'history') renderHistoryPage();
+}
+
+function applyPointsBackground({ phone, pts, bill, type, title, actId, logId, ts, onServerDone }) {
     const custRef = doc(db, 'customers', phone);
-    const actRef = doc(collection(db, 'customers', phone, 'activity'));
-    const logRef = doc(collection(db, 'log'));
-    const ts = Date.now();
+    const actRef = doc(db, 'customers', phone, 'activity', actId);
+    const logRef = doc(db, 'log', logId);
     const by = auth.currentUser ? auth.currentUser.email : '';
-    return runTransaction(db, async (tx) => {
+    const countVisit = type === 'purchase';
+
+    runTransaction(db, async (tx) => {
         const snap = await tx.get(custRef);
         const existing = snap.exists() ? snap.data() : null;
         const name = (existing && existing.name) || ('Customer ' + phone.slice(-4));
-        const old = storePoints(existing);
-        const total = old + pts;
-        if (total < 0) throw new Error('not-enough-points');
-        const data = { name, phone, points: { [STORE.id]: total } };
-        if (!existing) data.createdAt = ts;
-        tx.set(custRef, data, { merge: true });
-        tx.set(actRef, { storeId: STORE.id, type, title, points: pts, bill: bill || 0, ts });
-        tx.set(logRef, { storeId: STORE.id, phone, name, type, points: pts, bill: bill || 0, ts, by });
-        return { name, total, actId: actRef.id, logId: logRef.id };
+        const oldPts = storePoints(existing);
+        const totalPts = oldPts + pts;
+        if (totalPts < 0) throw new Error('not-enough-points');
+
+        const prevVisits = storeVisits(existing);
+        const nextVisits = countVisit ? prevVisits + 1 : Math.max(1, prevVisits);
+        const visitNum = countVisit ? nextVisits : Math.max(1, prevVisits);
+
+        const custPayload = {
+            name,
+            phone,
+            points: { [STORE.id]: totalPts },
+            visits: { [STORE.id]: nextVisits }
+        };
+        if (!existing) custPayload.createdAt = ts;
+
+        tx.set(custRef, custPayload, { merge: true });
+        tx.set(actRef, { storeId: STORE.id, type, title, points: pts, bill: bill || 0, visitNum, ts });
+        tx.set(logRef, { storeId: STORE.id, phone, name, type, points: pts, bill: bill || 0, visitNum, ts, by });
+        return { name, totalPts, nextVisits, visitNum };
+    }).then((info) => {
+        const updatedCust = {
+            ...(customerCache.get(phone) || { name: info.name, phone }),
+            name: info.name,
+            phone,
+            points: { ...((customerCache.get(phone) && customerCache.get(phone).points) || {}), [STORE.id]: info.totalPts },
+            visits: { ...((customerCache.get(phone) && customerCache.get(phone).visits) || {}), [STORE.id]: info.nextVisits }
+        };
+        customerCache.set(phone, updatedCust);
+        if (lookupFor === phone) {
+            currentCustomer = updatedCust;
+            updateLookup();
+            updatePreview();
+            syncRedeemOnlyMode();
+        }
+        if (typeof onServerDone === 'function') onServerDone(info);
+    }).catch(() => {
+        // Silent background fallback if offline; local UI remains responsive
     });
 }
 
-async function undoTransaction(t) {
+function undoTransactionBackground(t) {
+    removeLocalLogEntry(t.logId);
+    customerCache.delete(t.phone);
     const custRef = doc(db, 'customers', t.phone);
-    return runTransaction(db, async (tx) => {
+    runTransaction(db, async (tx) => {
         const snap = await tx.get(custRef);
         if (snap.exists()) {
-            const total = Math.max(0, storePoints(snap.data()) - t.pts);
-            tx.set(custRef, { points: { [STORE.id]: total } }, { merge: true });
-            customerCache.delete(t.phone); // Invalidate cache on undo
+            const d = snap.data();
+            const total = Math.max(0, storePoints(d) - t.pts);
+            const curVisits = storeVisits(d);
+            const nextVisits = t.type === 'purchase' ? Math.max(0, curVisits - 1) : curVisits;
+            tx.set(custRef, {
+                points: { [STORE.id]: total },
+                visits: { [STORE.id]: nextVisits }
+            }, { merge: true });
         }
         tx.delete(doc(db, 'customers', t.phone, 'activity', t.actId));
         tx.delete(doc(db, 'log', t.logId));
-    });
+    }).catch(() => {});
 }
 
 async function lookupCustomer(phone) {
@@ -990,12 +1430,12 @@ async function lookupCustomer(phone) {
     currentCustomer = null;
     updateLookup();
 
-    // Check memory cache first for instant repeat customer response
     if (customerCache.has(phone)) {
         currentCustomer = customerCache.get(phone);
         lookupFor = phone;
         updateLookup();
         updatePreview();
+        syncRedeemOnlyMode();
         return;
     }
 
@@ -1016,23 +1456,35 @@ async function lookupCustomer(phone) {
 }
 
 /* ============ FORM UPDATES ============ */
+function formatCustomerTag(name, phone) {
+    const digits = String(phone || '').replace(/\D/g, '');
+    const last4 = digits.slice(-4) || '0000';
+    const cleanName = String(name || '').trim();
+    if (!cleanName || /^customer\s+\d{4}$/i.test(cleanName)) {
+        return '#' + last4;
+    }
+    return cleanName + ' · #' + last4;
+}
+
 function updateLookup() {
     const phone = phoneInput.value.trim();
     lookupResult.classList.remove('new-customer');
-    if (phone.length !== STORE_PHONE_LENGTH || lookupFor !== phone) {
+    if (phone.length !== 11 || lookupFor !== phone) {
         lookupResult.classList.remove('visible');
         return;
     }
     if (currentCustomer) {
-        lookupResult.innerHTML = `<span class="dot"></span><span>${esc(currentCustomer.name)} - ${storePoints(currentCustomer)} pts</span>`;
+        const v = storeVisits(currentCustomer);
+        const nextVisitMult = Math.max(1, v + 1);
+        const tag = formatCustomerTag(currentCustomer.name, phone);
+        lookupResult.innerHTML = `<span class="dot"></span><span>${esc(tag)} · ${storePoints(currentCustomer)} pts · ${nextVisitMult}x</span>`;
     } else {
+        const last4 = phone.slice(-4);
         lookupResult.classList.add('new-customer');
-        lookupResult.innerHTML = `<span class="dot"></span><span>New customer</span>`;
+        lookupResult.innerHTML = `<span class="dot"></span><span>#${esc(last4)} · 0 pts · 1x</span>`;
     }
     lookupResult.classList.add('visible');
 }
-
-const STORE_PHONE_LENGTH = 11;
 
 function updatePreview() {
     const bill = parseFloat(billInput.value) || 0;
@@ -1044,7 +1496,7 @@ function updatePreview() {
     }
     const phone = phoneInput.value.trim();
     if (currentCustomer && lookupFor === phone && storePoints(currentCustomer) >= activeRewardCost()) {
-        rewardPillText.textContent = `Reward ready: ${activeRewardName()}`;
+        rewardPillText.textContent = `${storePoints(currentCustomer)} pts · ${activeRewardName()}`;
         rewardPill.classList.add('visible');
     } else {
         rewardPill.classList.remove('visible');
@@ -1057,17 +1509,18 @@ function updateConfirmState() {
 }
 
 phoneInput.addEventListener('input', () => {
-    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, STORE_PHONE_LENGTH);
+    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 11);
     setError(phoneWrap, phoneError, null);
     const phone = phoneInput.value;
-    if (phone.length === STORE_PHONE_LENGTH) {
+    if (phone.length === 11) {
         lookupCustomer(phone);
-        billInput.focus(); // Instantly jump focus to bill input
+        billInput.focus();
     } else {
         lookupFor = '';
         currentCustomer = null;
         updateLookup();
         updatePreview();
+        syncRedeemOnlyMode();
     }
     updateConfirmState();
 });
@@ -1081,21 +1534,14 @@ billInput.addEventListener('input', () => {
     updateConfirmState();
 });
 
-// Enter key shortcut on bill input for instant confirmation
 billInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !confirmBtn.disabled) {
-        confirmBtn.click();
-    }
+    if (e.key === 'Enter' && !confirmBtn.disabled) confirmBtn.click();
 });
 
-// Enter key shortcut on success screen for instant "Next customer"
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && successCard.classList.contains('visible')) {
-        nextBtn.click();
-    }
+    if (e.key === 'Enter' && successCard.classList.contains('visible')) nextBtn.click();
 });
 
-// Preset chips event listeners
 document.querySelectorAll('.preset-chip').forEach(btn => {
     btn.addEventListener('click', () => {
         billInput.value = btn.dataset.amt;
@@ -1105,8 +1551,8 @@ document.querySelectorAll('.preset-chip').forEach(btn => {
     });
 });
 
-/* ============ CONFIRM ============ */
-confirmBtn.addEventListener('click', async () => {
+/* ============ INSTANT CONFIRM (NO WAITING / NO LOADING STATE) ============ */
+confirmBtn.addEventListener('click', () => {
     const phone = phoneInput.value.trim();
     const bill = parseFloat(billInput.value) || 0;
     if (!isValidPhone(phone)) {
@@ -1121,31 +1567,68 @@ confirmBtn.addEventListener('click', async () => {
     }
     const pts = pointsForBill(bill);
     if (pts <= 0) {
-        setError(billWrap, billError, `Bill is too small. ৳${activeTakaPerPoint()} gives 1 point.`);
+        setError(billWrap, billError, `Bill is too small. &#2547;${activeTakaPerPoint()} gives 1 point.`);
         return;
     }
-    busy = true;
-    confirmBtn.disabled = true;
-    confirmBtn.textContent = 'Saving...';
-    try {
-        const res = await applyPoints({ phone, pts, bill, type: 'purchase', title: 'Purchase' });
-        // Update local cache with new total
-        if (currentCustomer && lookupFor === phone) {
-            currentCustomer.points = { [STORE.id]: res.total };
-            customerCache.set(phone, currentCustomer);
+
+    const ts = Date.now();
+    const actId = 'act_' + ts + '_' + Math.random().toString(36).slice(2, 7);
+    const logId = 'log_' + ts + '_' + Math.random().toString(36).slice(2, 7);
+
+    const cached = customerCache.get(phone) || (lookupFor === phone ? currentCustomer : null);
+    const custName = (cached && cached.name) || ('Customer ' + phone.slice(-4));
+    const prevPts = storePoints(cached);
+    const nextPts = prevPts + pts;
+    const prevVisits = storeVisits(cached);
+    const visitNum = prevVisits + 1;
+
+    const optimisticCust = {
+        ...(cached || { name: custName, phone }),
+        name: custName,
+        phone,
+        points: { ...((cached && cached.points) || {}), [STORE.id]: nextPts },
+        visits: { ...((cached && cached.visits) || {}), [STORE.id]: visitNum }
+    };
+    customerCache.set(phone, optimisticCust);
+    currentCustomer = optimisticCust;
+    lookupFor = phone;
+
+    pushLocalLogEntry({
+        storeId: STORE.id,
+        phone,
+        name: custName,
+        type: 'purchase',
+        title: 'Purchase',
+        points: pts,
+        bill,
+        visitNum,
+        ts,
+        logId
+    });
+
+    lastTransaction = { phone, pts, type: 'purchase', actId, logId };
+    successTitle.textContent = `+${pts} pts added to ${custName}`;
+    successSub.textContent = `New total: ${nextPts} pts · ${ordinalLabel(visitNum)}`;
+    formSection.style.display = 'none';
+    successCard.classList.add('visible');
+    startUndoTimer();
+
+    applyPointsBackground({
+        phone,
+        pts,
+        bill,
+        type: 'purchase',
+        title: 'Purchase',
+        actId,
+        logId,
+        ts,
+        onServerDone: (info) => {
+            if (!successCard.classList.contains('hidden') && successCard.classList.contains('visible') && lastTransaction && lastTransaction.logId === logId) {
+                successTitle.textContent = `+${pts} pts added to ${info.name}`;
+                successSub.textContent = `New total: ${info.totalPts} pts · ${ordinalLabel(info.visitNum)}`;
+            }
         }
-        lastTransaction = { phone, pts, actId: res.actId, logId: res.logId };
-        successTitle.textContent = `+${pts} pts added to ${res.name}`;
-        successSub.textContent = `New total: ${res.total} pts`;
-        formSection.style.display = 'none';
-        successCard.classList.add('visible');
-        startUndoTimer();
-    } catch (e) {
-        setError(billWrap, billError, 'Could not save. Check internet and try again.');
-    }
-    busy = false;
-    confirmBtn.textContent = 'Confirm';
-    updateConfirmState();
+    });
 });
 
 /* ============ UNDO ============ */
@@ -1165,19 +1648,17 @@ function startUndoTimer() {
     }, 1000);
 }
 
-undoBtn.addEventListener('click', async () => {
+undoBtn.addEventListener('click', () => {
     if (!lastTransaction) return;
     const t = lastTransaction;
     lastTransaction = null;
     clearInterval(undoTimer);
     undoBtn.classList.add('hidden');
-    try {
-        await undoTransaction(t);
-    } catch (e) {}
+    undoTransactionBackground(t);
     resetToForm();
 });
 
-/* ============ NEXT CUSTOMER ============ */
+/* ============ NEXT CUSTOMER & REDEEM-ONLY VIEW ============ */
 nextBtn.addEventListener('click', resetToForm);
 
 function setRedeemOnlyView(enabled) {
@@ -1196,7 +1677,7 @@ function syncRedeemOnlyMode() {
     const hasReward = Boolean(currentCustomer && lookupFor === phone && pts >= target);
     setRedeemOnlyView(hasReward);
     if (hasReward) {
-        rewardPillText.textContent = `Reward ready (${pts} pts): ${activeRewardName()}`;
+        rewardPillText.textContent = `${pts} pts · ${activeRewardName()}`;
         rewardPill.classList.add('visible');
     } else {
         rewardPill.classList.remove('visible');
@@ -1222,7 +1703,7 @@ function resetToForm() {
     phoneInput.focus();
 }
 
-/* ============ REDEEM ============ */
+/* ============ INSTANT REDEEM ============ */
 $('redeem-btn').addEventListener('click', () => {
     const phone = phoneInput.value.trim();
     if (!currentCustomer || lookupFor !== phone) return;
@@ -1237,23 +1718,53 @@ $('redeem-btn').addEventListener('click', () => {
         <button class="sheet-btn" id="sheet-confirm-redeem">Confirm redeem</button>
         <button class="sheet-btn secondary" onclick="closeSheet()">Cancel</button>
     `);
-    $('sheet-confirm-redeem').addEventListener('click', async (ev) => {
-        const btn = ev.currentTarget;
-        btn.disabled = true;
-        btn.textContent = 'Saving...';
-        try {
-            await applyPoints({ phone, pts: -cost, type: 'redeem', title: 'Redeemed free item' });
-            customerCache.delete(phone); // Invalidate cache
-            closeSheet();
-            await lookupCustomer(phone);
-        } catch (e) {
-            btn.disabled = false;
-            btn.textContent = 'Could not save. Try again';
-        }
+    $('sheet-confirm-redeem').addEventListener('click', () => {
+        const ts = Date.now();
+        const actId = 'act_' + ts + '_' + Math.random().toString(36).slice(2, 7);
+        const logId = 'log_' + ts + '_' + Math.random().toString(36).slice(2, 7);
+
+        const custName = currentCustomer.name || ('Customer ' + phone.slice(-4));
+        const nextPts = Math.max(0, storePoints(currentCustomer) - cost);
+        const visitNum = Math.max(1, storeVisits(currentCustomer));
+
+        const updatedCust = {
+            ...currentCustomer,
+            points: { ...(currentCustomer.points || {}), [STORE.id]: nextPts }
+        };
+        customerCache.set(phone, updatedCust);
+        currentCustomer = updatedCust;
+
+        pushLocalLogEntry({
+            storeId: STORE.id,
+            phone,
+            name: custName,
+            type: 'redeem',
+            title: 'Redeemed free item',
+            points: -cost,
+            bill: 0,
+            visitNum,
+            ts,
+            logId
+        });
+
+        closeSheet();
+        updateLookup();
+        updatePreview();
+        syncRedeemOnlyMode();
+
+        applyPointsBackground({
+            phone,
+            pts: -cost,
+            bill: 0,
+            type: 'redeem',
+            title: 'Redeemed free item',
+            actId,
+            logId,
+            ts
+        });
     });
 });
 
-/* ============ BOTTOM SHEET ============ */
 function openSheet(html) {
     sheetContent.innerHTML = html;
     sheetBackdrop.classList.add('open');
@@ -1262,7 +1773,6 @@ function openSheet(html) {
 function closeSheet() {
     sheetBackdrop.classList.remove('open');
     bottomSheet.classList.remove('open');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'add'));
 }
 window.closeSheet = closeSheet;
 sheetBackdrop.addEventListener('click', closeSheet);
@@ -1279,88 +1789,7 @@ sheetHandle.addEventListener('touchend', (e) => {
     if (delta > 80) closeSheet();
 });
 
-/* ============ BOTTOM NAV ============ */
-document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if (tab === 'history') {
-            openSheet(`
-                <div class="sheet-title">History</div>
-                <div class="sheet-subtitle">Coming soon in the next version.</div>
-                <button class="sheet-btn" onclick="closeSheet()">OK</button>
-            `);
-        } else if (tab === 'settings') {
-            openSheet(`
-                <div class="sheet-title">Store settings</div>
-                <div class="sheet-subtitle" style="margin-bottom:14px;">Updates apply live to customer cards</div>
-                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;text-align:left;">
-                    <div>
-                        <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;">Free reward name</label>
-                        <input id="cfg-reward-name" type="text" value="${esc(activeRewardName())}" style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid #d1d5db;background:#fff;font-size:14px;font-family:inherit;">
-                    </div>
-                    <div style="display:flex;gap:10px;">
-                        <div style="flex:1;">
-                            <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;">Points needed</label>
-                            <input id="cfg-reward-cost" type="number" min="1" step="1" value="${esc(activeRewardCost())}" style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid #d1d5db;background:#fff;font-size:14px;font-family:inherit;">
-                        </div>
-                        <div style="flex:1;">
-                            <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;">Taka per 1 point</label>
-                            <input id="cfg-taka-per-point" type="number" min="1" step="1" value="${esc(activeTakaPerPoint())}" style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid #d1d5db;background:#fff;font-size:14px;font-family:inherit;">
-                        </div>
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;">Google review link</label>
-                        <input id="cfg-review-url" type="url" placeholder="https://g.page/r/..." value="${esc(activeReviewUrl())}" style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid #d1d5db;background:#fff;font-size:14px;font-family:inherit;">
-                    </div>
-                </div>
-                <div id="cfg-status" style="min-height:18px;font-size:12px;font-weight:600;color:#555;text-align:center;margin-bottom:10px;"></div>
-                <button class="sheet-btn" id="save-store-cfg-btn">Save settings</button>
-                <div style="margin-top:12px;text-align:center;font-size:12px;color:#6b7280;">Signed in as <strong>${esc(auth.currentUser ? auth.currentUser.email : '')}</strong></div>
-                <button class="sheet-btn secondary" id="sign-out-btn">Sign out</button>
-            `);
-            $('save-store-cfg-btn').addEventListener('click', async (ev) => {
-                const btn = ev.currentTarget;
-                const statusEl = $('cfg-status');
-                const nextRewardName = ($('cfg-reward-name').value || '').trim();
-                const nextRewardCost = parseInt($('cfg-reward-cost').value, 10);
-                const nextTakaPerPoint = parseInt($('cfg-taka-per-point').value, 10);
-                const nextReviewUrl = ($('cfg-review-url').value || '').trim();
-                if (!nextRewardName) { statusEl.style.color = '#ef4444'; statusEl.textContent = 'Enter a reward name.'; return; }
-                if (!Number.isFinite(nextRewardCost) || nextRewardCost < 1) { statusEl.style.color = '#ef4444'; statusEl.textContent = 'Points needed must be at least 1.'; return; }
-                if (!Number.isFinite(nextTakaPerPoint) || nextTakaPerPoint < 1) { statusEl.style.color = '#ef4444'; statusEl.textContent = 'Taka per point must be at least 1.'; return; }
-                btn.disabled = true;
-                btn.textContent = 'Saving...';
-                statusEl.style.color = '#555';
-                statusEl.textContent = '';
-                try {
-                    const payload = {
-                        name: storeConfig.name || STORE.name,
-                        rewardName: nextRewardName,
-                        rewardCost: nextRewardCost,
-                        takaPerPoint: nextTakaPerPoint,
-                        reviewUrl: nextReviewUrl
-                    };
-                    await setDoc(doc(db, 'stores', STORE.id), payload, { merge: true });
-                    storeConfig = { ...storeConfig, ...payload };
-                    updatePreview();
-                    syncRedeemOnlyMode();
-                    statusEl.style.color = '#16a34a';
-                    statusEl.textContent = 'Saved!';
-                } catch (e) {
-                    statusEl.style.color = '#ef4444';
-                    statusEl.textContent = 'Could not save settings. Check connection & rules.';
-                }
-                btn.disabled = false;
-                btn.textContent = 'Save settings';
-            });
-            $('sign-out-btn').addEventListener('click', () => { closeSheet(); signOut(auth); });
-        }
-    });
-});
-
-/* ============ TODAY'S LIST (live) ============ */
+/* ============ TODAY'S MINI LIST & CLEAN REFERENCE-STYLE HISTORY PAGE ============ */
 function renderActivity() {
     activityList.querySelectorAll('.activity-item').forEach(el => el.remove());
     if (todayLog.length === 0) { emptyNote.style.display = ''; return; }
@@ -1384,13 +1813,162 @@ function renderActivity() {
         activityList.appendChild(row);
     });
 }
+
+function getInitials(name) {
+    const parts = String(name || 'Customer').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'CU';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function avatarToneIndex(seed) {
+    let h = 0;
+    const s = String(seed || '');
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return h % 5;
+}
+
+function renderHistoryPage() {
+    const listEl = $('ref-history-list');
+    if (!listEl) return;
+    const q = ($('history-search').value || '').trim().toLowerCase();
+    const digitsOnly = q.replace(/\D/g, '');
+    const sourceRows = historyScope === 'today' ? todayLog : allRecentLog;
+
+    const filtered = sourceRows.filter(item => {
+        if (historyTypeFilter !== 'all' && item.type !== historyTypeFilter) return false;
+        if (!q) return true;
+        const pStr = String(item.phone || '').toLowerCase();
+        const nStr = String(item.name || '').toLowerCase();
+        return (digitsOnly && pStr.includes(digitsOnly)) || nStr.includes(q);
+    });
+
+    if ($('history-count-badge')) {
+        $('history-count-badge').textContent = `${filtered.length} ${filtered.length === 1 ? 'entry' : 'entries'}`;
+    }
+
+    if (filtered.length === 0) {
+        listEl.innerHTML = '<div class="empty-note">No customers or activity found.</div>';
+        return;
+    }
+
+    listEl.innerHTML = filtered.slice(0, 40).map(item => {
+        const isRedeem = item.type === 'redeem';
+        const displayName = item.name || ('Customer ' + String(item.phone || '').slice(-4));
+        const initials = getInitials(displayName);
+        const tone = avatarToneIndex(item.phone || displayName);
+        const ptsLabel = `${item.points > 0 ? '+' : ''}${item.points} pts`;
+        const visitText = item.visitNum ? ` · ${ordinalLabel(item.visitNum)}` : '';
+        const subInfo = isRedeem
+            ? `Reward redeemed${item.phone ? ' · ' + esc(item.phone) : ''}${esc(visitText)}`
+            : `${Number(item.bill) > 0 ? 'Bill ৳' + esc(item.bill) : 'Purchase'}${item.phone ? ' · ' + esc(item.phone) : ''}${esc(visitText)}`;
+
+        return `
+            <div class="ref-row">
+                <div class="ref-avatar tone-${tone}">${esc(initials)}</div>
+                <div class="ref-info">
+                    <div class="ref-name">${esc(displayName)}</div>
+                    <div class="ref-sub">${subInfo}</div>
+                    <div class="ref-time">${timeOf(item.ts)}</div>
+                </div>
+                <div class="ref-badge ${isRedeem ? 'redeem' : 'purchase'}">${esc(ptsLabel)}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+$('scope-today-btn').addEventListener('click', () => {
+    historyScope = 'today';
+    $('scope-today-btn').classList.add('active');
+    $('scope-all-btn').classList.remove('active');
+    renderHistoryPage();
+});
+$('scope-all-btn').addEventListener('click', () => {
+    historyScope = 'all';
+    $('scope-all-btn').classList.add('active');
+    $('scope-today-btn').classList.remove('active');
+    renderHistoryPage();
+});
+document.querySelectorAll('[data-htype]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        historyTypeFilter = btn.dataset.htype;
+        document.querySelectorAll('[data-htype]').forEach(b => b.classList.toggle('active', b.dataset.htype === historyTypeFilter));
+        renderHistoryPage();
+    });
+});
+$('history-search').addEventListener('input', () => {
+    renderHistoryPage();
+});
+
+/* ============ DEDICATED SETTINGS PAGE + SIGN OUT CONFIRMATION ============ */
+function populateSettingsPage() {
+    $('page-reward-name').value = activeRewardName();
+    $('page-reward-cost').value = String(activeRewardCost());
+    $('page-taka-per-point').value = String(activeTakaPerPoint());
+    $('page-review-url').value = activeReviewUrl();
+    $('page-cfg-status').textContent = '';
+    $('settings-account-label').innerHTML = `Signed in as <strong>${esc(auth.currentUser ? auth.currentUser.email : '')}</strong>`;
+}
+
+$('page-save-cfg-btn').addEventListener('click', () => {
+    const statusEl = $('page-cfg-status');
+    const nextRewardName = ($('page-reward-name').value || '').trim();
+    const nextRewardCost = parseInt($('page-reward-cost').value, 10);
+    const nextTakaPerPoint = parseInt($('page-taka-per-point').value, 10);
+    const nextReviewUrl = ($('page-review-url').value || '').trim();
+
+    if (!nextRewardName) { statusEl.style.color = '#ef4444'; statusEl.textContent = 'Enter a reward name.'; return; }
+    if (!Number.isFinite(nextRewardCost) || nextRewardCost < 1) { statusEl.style.color = '#ef4444'; statusEl.textContent = 'Points needed must be at least 1.'; return; }
+    if (!Number.isFinite(nextTakaPerPoint) || nextTakaPerPoint < 1) { statusEl.style.color = '#ef4444'; statusEl.textContent = 'Taka per point must be at least 1.'; return; }
+
+    const payload = {
+        name: storeConfig.name || STORE.name,
+        rewardName: nextRewardName,
+        rewardCost: nextRewardCost,
+        takaPerPoint: nextTakaPerPoint,
+        reviewUrl: nextReviewUrl
+    };
+    storeConfig = { ...storeConfig, ...payload };
+    updatePreview();
+    syncRedeemOnlyMode();
+    statusEl.style.color = '#16a34a';
+    statusEl.textContent = 'Saved!';
+
+    setDoc(doc(db, 'stores', STORE.id), payload, { merge: true }).catch(() => {
+        statusEl.style.color = '#ef4444';
+        statusEl.textContent = 'Could not sync to database.';
+    });
+});
+
+$('page-sign-out-btn').addEventListener('click', () => {
+    openSheet(`
+        <div class="sheet-title">Sign out?</div>
+        <div class="sheet-subtitle">Are you sure you want to sign out of the cashier account?</div>
+        <button class="sheet-btn" id="confirm-sign-out-btn">Yes, sign out</button>
+        <button class="sheet-btn secondary" onclick="closeSheet()">Cancel</button>
+    `);
+    $('confirm-sign-out-btn').addEventListener('click', () => {
+        closeSheet();
+        // Instant UI transition; signOut runs in background
+        stopLogListeners();
+        switchPage('add');
+        gate.classList.remove('hidden');
+        signOut(auth).catch(() => {});
+    });
+});
+
+/* ============ LOG LISTENERS ============ */
 function updateTodayCount() {
     todayCountEl.textContent = `${todayCount} customer${todayCount === 1 ? '' : 's'} today`;
 }
 
-function startLogListener() {
+function startLogListeners() {
     if (unsubLog) unsubLog();
-    const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
+    if (unsubAllLog) unsubAllLog();
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
     unsubLog = onSnapshot(
         query(collection(db, 'log'), where('ts', '>=', startOfDay.getTime()), orderBy('ts', 'desc')),
         (snap) => {
@@ -1398,8 +1976,22 @@ function startLogListener() {
             todayCount = todayLog.filter(e => e.type === 'purchase').length;
             renderActivity();
             updateTodayCount();
+            if (currentPage === 'history') renderHistoryPage();
         }
     );
+
+    unsubAllLog = onSnapshot(
+        query(collection(db, 'log'), orderBy('ts', 'desc'), limit(100)),
+        (snap) => {
+            allRecentLog = snap.docs.map(d => d.data()).filter(e => e.storeId === STORE.id);
+            if (currentPage === 'history') renderHistoryPage();
+        }
+    );
+}
+
+function stopLogListeners() {
+    if (unsubLog) { unsubLog(); unsubLog = null; }
+    if (unsubAllLog) { unsubAllLog(); unsubAllLog = null; }
 }
 
 /* ============ AUTH STATE ============ */
@@ -1411,7 +2003,7 @@ if (!isConfigured) {
         if (user) {
             gate.classList.add('hidden');
             gatePassword.value = '';
-            startLogListener();
+            startLogListeners();
             try {
                 const storeRef = doc(db, 'stores', STORE.id);
                 const snap = await getDoc(storeRef);
@@ -1434,8 +2026,10 @@ if (!isConfigured) {
             } catch (e) {
                 gateError.textContent = '';
             }
+            if (currentPage === 'settings') populateSettingsPage();
         } else {
-            if (unsubLog) { unsubLog(); unsubLog = null; }
+            stopLogListeners();
+            switchPage('add');
             gate.classList.remove('hidden');
         }
     });
@@ -1503,7 +2097,7 @@ async function scanLoop() {
 }
 async function onScanned(phone) {
     closeScanner();
-    phoneInput.value = phone.replace(/\D/g, '').slice(0, STORE_PHONE_LENGTH);
+    phoneInput.value = phone.replace(/\D/g, '').slice(0, 11);
     setError(phoneWrap, phoneError, null);
     await lookupCustomer(phoneInput.value);
     updateConfirmState();
@@ -1519,6 +2113,7 @@ $('scan-close').addEventListener('click', closeScanner);
 $('store-name').textContent = STORE.name;
 updateTodayCount();
 updateConfirmState();
+
     </script>
 </body>
 </html>
